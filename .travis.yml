@@ -4,5 +4,6 @@ python:
 install:
   - pip install -r requirements.txt
   - python -c "import nltk; nltk.download('punkt');"
+  - python -c "import nltk; nltk.download('stopwords');"
 script:
-  - python -m unittest tests/*.py
+  - python -m unittest -v tests/*.py
