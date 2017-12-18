@@ -1,3 +1,4 @@
+# stdlib
 from collections import defaultdict
 
 
@@ -30,6 +31,14 @@ class Index:
         for term in doc.tokens:
             id_term = self.add_term(term)
             insert_sorted(self.terms_doc[id_term], doc.identifier)
+
+    def search_bool(self, query):
+        '''
+        query format: w, queryo(query), ~query
+        (a & b)|c|~(d|k) => CNF
+
+        '''
+        return "wtf"
 
 
 def insert_sorted(array, element):

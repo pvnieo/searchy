@@ -1,5 +1,4 @@
 import nltk
-from nltk.stem.snowball import EnglishStemmer
 
 
 STOP_WORDS = set(nltk.corpus.stopwords.words('english'))
@@ -45,7 +44,6 @@ class Document:
 		self.identifier = identifier
 		self.tokens = tokens or []
 		self.tokenizer = nltk.word_tokenize
-		self.stemmer = EnglishStemmer()
 
 	def tokenize(self, text):
 		for char in PONCTUATION:

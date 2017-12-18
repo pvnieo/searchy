@@ -15,8 +15,10 @@ def main():
 
     documents = Document.parse_cacm(args.collection, verbose=True)
     index = Index.index_all(documents)
-    # index.print()
-
+    if args.interactive:
+        while True:
+            query = input('> ')
+            print(index.search_bool(query))
 
 if __name__ == "__main__":
     main()
