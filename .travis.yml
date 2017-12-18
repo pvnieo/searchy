@@ -7,3 +7,6 @@ install:
   - python -c "import nltk; nltk.download('stopwords');"
 script:
   - python -m unittest -v tests/*.py
+notifications:
+  email: false
+
