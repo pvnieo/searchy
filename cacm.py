@@ -45,7 +45,7 @@ def main():
             query = input(u'\U0001F50D  > ')
             exec_search(index, engine, query)
     elif args.query:
-        exec_search(index, engine, query)
+        exec_search(index, engine, args.query)
 
 if __name__ == "__main__":
     main()
