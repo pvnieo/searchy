@@ -7,7 +7,7 @@ from Document import Document
 class TestDocument(unittest.TestCase):
 
     def test_parse_cacm(self):
-        documents = Document.parse_cacm(os.path.join(os.getcwd(), 'tests', 'cacm.all'))
+        documents = Document.parse_cacm(os.path.join(os.getcwd(), 'tests', 'cacm.all'), verbose=False, use_cache=False)
 
         self.assertEqual(len(documents), 5)
 

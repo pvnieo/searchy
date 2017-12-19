@@ -1,5 +1,9 @@
 # stdlib
-from collections import defaultdict
+import pickle
+import os.path
+# project
+from Document import Document
+from utils import insert_sorted, hash_file
 
 
 class Index:
@@ -11,42 +15,47 @@ class Index:
             index.add_doc(doc)
         return index
 
+    @staticmethod
+    def index_cacm_file(filepath, verbose=True, use_cache=True):
+        cachepath = os.path.join('__cache__', hash_file(filepath) + '.index.bin')
+        if use_cache and os.path.exists(cachepath):
+            with open(cachepath, 'rb') as cache:
+                try:
+                    return pickle.load(cache)
+                except pickle.UnpicklingError:
+                    pass
+        docs = Document.parse_cacm(filepath, verbose, use_cache)
+        index = Index.index_all(docs)
+        if use_cache:
+            with open(cachepath, 'wb') as cache:
+                pickle.dump(index, cache)
+        return index
+
     def __init__(self):
+        # term_id => term
         self.terms_idx = {}
-        self.rev_terms_ix = []
-        self.terms_doc = defaultdict(list)
+        self.terms_rev_idx = {}
+        # doc_id => document object
+        self.docs_idx = {}
+        self.matrix = []
+        
+    def get_term_id(self, term):
+        if term in self.terms_rev_idx:
+            return self.terms_rev_idx[term]
+        term_id = len(self.matrix)
+        self.matrix.append([])
+        self.terms_rev_idx[term] = term_id
+        self.terms_idx[term_id] = term
+        return term_id
 
-    def print(self):
-        for term_id, docs in self.terms_doc.items():
-            print(self.rev_terms_ix[term_id], docs)
+    def get_term_by_id(self, term_id):
+        return self.terms_idx[term_id]
 
-    def add_term(self, term):
-        n = len(self.terms_idx)
-        if term not in self.terms_idx:
-            self.terms_idx[term] = n
-            self.rev_terms_ix.append(term)
-        return self.terms_idx[term]
+    def get_doc_by_id(self, doc_id):
+        return self.docs_idx[doc_id]
 
     def add_doc(self, doc):
+        self.docs_idx[doc.identifier] = doc
         for term in doc.tokens:
-            id_term = self.add_term(term)
-            insert_sorted(self.terms_doc[id_term], doc.identifier)
-
-    def search_bool(self, query):
-        '''
-        query format: w, queryo(query), ~query
-        (a & b)|c|~(d|k) => CNF
-
-        '''
-        return "wtf"
-
-
-def insert_sorted(array, element):
-    n = len(array)
-    for i in range(n):
-        if element < array[i]:
-            array.insert(i, element)
-            return
-        elif element == array[i]:
-            return
-    array.append(element)
+            id_term = self.get_term_id(term)
+            insert_sorted(self.matrix[id_term], doc.identifier)
