@@ -82,8 +82,21 @@ class EvalTree:
     def _construct_tree_rec(expression):
         if expression == '':
             return None
-        if expression[0] == '(' and expression[-1] == ')':
-            return EvalTree._construct_tree_rec(expression[1:-1])
+        if expression[0] == '(':
+            balance = 1
+            for i, char in enumerate(expression[1:]):
+                i += 1
+                if char == '(':
+                    balance += 1
+                elif char == ')':
+                    balance -= 1
+                if balance == 0:
+                    if i == len(expression)-1:
+                        return EvalTree._construct_tree_rec(expression[1:i])
+                    else:
+                        return EvalTree(expression[i+1],
+                                EvalTree._construct_tree_rec(expression[1:i]),
+                                EvalTree._construct_tree_rec(expression[i+2:]))
         if expression[0] in EvalTree.OPERATORS_1:
             return EvalTree(expression[0], EvalTree._construct_tree_rec(expression[1:]))
         for i, char in enumerate(expression):
