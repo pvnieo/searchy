@@ -1,7 +1,6 @@
 
 
 class BooleanSearchEngine:
-    
     def __init__(self, index):
         self.index = index
         self.interpreter = {
@@ -18,21 +17,22 @@ class BooleanSearchEngine:
 
     def not_contains(self, res, docs):
         return res.difference(docs)
-    
+
     def intersect(self, docs1, docs2):
         return docs1.intersection(docs2)
-        
+
     def union(self, docs1, docs2):
         return docs1.union(docs2)
 
-    def search(self, query):
+    def search(self, query, highlight=True):
         tree = EvalTree.construct_tree(query)
         res = tree.eval(self.interpreter, set(self.index.docs_idx.keys()))
-        leafs = tree.get_leafs()
-        for doc_id in res:
-            self.index.get_doc_by_id(doc_id).reset_highlighted()
-            for term in leafs:
-                self.index.get_doc_by_id(doc_id).highlight(term)
+        if highlight:
+            leafs = tree.get_leafs()
+            for doc_id in res:
+                self.index.get_doc_by_id(doc_id).reset_highlighted()
+                for term in leafs:
+                    self.index.get_doc_by_id(doc_id).highlight(term)
         return res
 
 
@@ -75,7 +75,7 @@ class EvalTree:
         expression = ''.join(expression.split())
         # check if expression is valid
         if not EvalTree.is_valid(expression):
-            raise NotValidQueryExpression(expression)
+            raise NotValidQueryExpression("Invalid query format %s" % expression)
         return EvalTree._construct_tree_rec(expression)
 
     @staticmethod
