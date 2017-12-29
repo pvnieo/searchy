@@ -32,8 +32,8 @@ optional arguments:
 
 exemple d'usage:
 ```
-$ ./cacm.py -i Data/CACM/cacm.all
-Loaded Data/CACM/cacm.all
+$ ./cacm.py -i data/CACM/cacm.all
+Loaded data/CACM/cacm.all
   documents 	 3204
   tokens 	 118919
 🔍  > programming&address&(~computer|user)
