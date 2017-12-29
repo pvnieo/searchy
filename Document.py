@@ -9,7 +9,7 @@ from utils import COLOR, replace_i, hash_collection, get_cache, set_cache
 
 STOP_WORDS = set(nltk.corpus.stopwords.words('english'))
 PONCTUATION = set(['.', ',', ':', ';', ')', '(', '[', ']', ' ', '{', '}', '"', '-', '/', '\\'])
-with open("Data/CACM/common_words", 'r') as common_words:
+with open("data/CACM/common_words", 'r') as common_words:
 	STOP_WORDS.update(set(common_words.read().lower().splitlines()))
 
 class Document:
@@ -58,6 +58,7 @@ class Document:
 		if curr is not None:
 			token_count += len(curr.tokens)
 			docs.append(curr)
+
 		if verbose:
 			print("Loaded {}".format(filepath))
 			print("  documents \t {}".format(len(docs)))

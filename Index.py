@@ -38,13 +38,13 @@ class Index:
         self.terms_rev_idx = {}
         # doc_id => document object
         self.docs_idx = {}
-        self.matrix = []
+        self.inversed_index = []
         
     def get_term_id(self, term):
         if term in self.terms_rev_idx:
             return self.terms_rev_idx[term]
-        term_id = len(self.matrix)
-        self.matrix.append([])
+        term_id = len(self.inversed_index)
+        self.inversed_index.append([])
         self.terms_rev_idx[term] = term_id
         self.terms_idx[term_id] = term
         return term_id
@@ -57,6 +57,13 @@ class Index:
 
     def add_doc(self, doc):
         self.docs_idx[doc.identifier] = doc
+        terms_seen = []
         for term in doc.tokens:
-            id_term = self.get_term_id(term)
-            insert_sorted(self.matrix[id_term], doc.identifier)
+            if term in terms_seen:
+                continue
+            else:
+                terms_seen.append(term)
+                id_term = self.get_term_id(term)
+                # inversed_index[i] ==> [(doc_id, tf),...] list of tuples
+                inversed_index[id_term].append((doc.identifier, sum(1 for element in doc.tokens if term == element))
+                inversed_index[id_term].sort(key=lambda posting:posting[1])

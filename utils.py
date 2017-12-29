@@ -26,7 +26,8 @@ def replace_i(text, old, new):
 def insert_sorted(array, element):
     n = len(array)
     for i in range(n):
-        if element < array[i]:
+        element = element.Keys[0]
+        if element[element] < array[i]:
             array.insert(i, element)
             return
         elif element == array[i]:
