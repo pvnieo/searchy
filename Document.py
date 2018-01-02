@@ -58,6 +58,7 @@ class Document:
 		if curr is not None:
 			token_count += len(curr.tokens)
 			docs.append(curr)
+
 		if verbose:
 			print("Loaded {}".format(filepath))
 			print("  documents \t {}".format(len(docs)))
