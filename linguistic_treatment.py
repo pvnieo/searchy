@@ -1,10 +1,11 @@
 
 import nltk
+import string
 from nltk.stem import WordNetLemmatizer
 
 STOP_WORDS = set(nltk.corpus.stopwords.words('english'))
 PONCTUATION = string.punctuation
-with open("data/CACM/common_words", 'r') as common_words:
+with open("Data/CACM/common_words", 'r') as common_words:
     STOP_WORDS.update(set(common_words.read().lower().splitlines()))
 wordnet_lemmatizer = WordNetLemmatizer()
 

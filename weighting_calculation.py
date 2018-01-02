@@ -1,4 +1,5 @@
 from math import *
+import numpy as np
 
 class WeightingCalculation:
 
@@ -8,10 +9,11 @@ class WeightingCalculation:
         w = []
         for term_id, posting_list in enumerate(inversed_index):
             w.append([])
-            for i in range(N+1)
-                w[term_id][i] = 0
-            for doc_id, tf in enumerate(posting_list):
-                w[term_id][doc_id] = (1 + log(tf,10)) * log(N/len(posting_list),10)
+            for i in range(N+1):
+                w[term_id].append(0)
+            for tupl in posting_list:
+                w[term_id][tupl[0]] = (1 + log(tupl[1],10)) * log(N/len(posting_list),10)
+            # w est une matrice, les lignes sont les tokens, et les colonnes sont les documents, l'intersection est le document
         return w
 
     @staticmethod
@@ -20,14 +22,12 @@ class WeightingCalculation:
         max_tf_for_doc_list = []
         for term_id, posting_list in enumerate(inversed_index):
             w.append([])
-            for i in range(N+1)
+            for i in range(N+1):
                 w[term_id].append(0)
                 max_tf_for_doc_list.append(0)
-            for doc_id, tf in enumerate(posting_list):
-                max_for_doc = max_tf_for_doc_list(doc_id) 
-                                    if max_tf_for_doc_list(doc_id) != 0
-                                    else compute_max_tf_for_doc(inversed_index,max_tf_for_doc_list, doc_id)
-                w[term_id][doc_id] = tf/max_for_doc
+            for doc_id, tupl in enumerate(posting_list):
+                max_for_doc = max_tf_for_doc_list(doc_id) if max_tf_for_doc_list(doc_id) != 0 else compute_max_tf_for_doc(inversed_index,max_tf_for_doc_list, doc_id)
+                w[term_id][doc_id] = tupl[1]/max_for_doc
         return w
 
 

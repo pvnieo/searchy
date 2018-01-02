@@ -65,5 +65,5 @@ class Index:
                 terms_seen.append(term)
                 id_term = self.get_term_id(term)
                 # inversed_index[i] ==> [(doc_id, tf),...] list of tuples
-                inversed_index[id_term].append((doc.identifier, sum(1 for element in doc.tokens if term == element))
-                inversed_index[id_term].sort(key=lambda posting:posting[1])
+                self.inversed_index[id_term].append((doc.identifier, sum(1 for element in doc.tokens if term == element)))
+                self.inversed_index[id_term].sort(key=lambda posting:posting[0])
