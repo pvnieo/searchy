@@ -1,3 +1,5 @@
+# project
+import words
 
 
 class BooleanSearchEngine:
@@ -11,8 +13,12 @@ class BooleanSearchEngine:
         }
 
     def contains(self, res, term):
+        term = words.process(term)[0][0]
         index = self.index
-        contain_doc_ids = set(index.matrix[index.get_term_id(term.lower())])
+        term_id = index.get_term_id(term)
+        contain_doc_ids = set()
+        if term_id is not None:
+            contain_doc_ids = set([doc_id for (doc_id, _) in index.inversed_index[term_id]])
         return res.intersection(contain_doc_ids)
 
     def not_contains(self, res, docs):
@@ -24,16 +30,10 @@ class BooleanSearchEngine:
     def union(self, docs1, docs2):
         return docs1.union(docs2)
 
-    def search(self, query, highlight=True):
+    def search(self, query):
         tree = EvalTree.construct_tree(query)
-        res = tree.eval(self.interpreter, set(self.index.docs_idx.keys()))
-        if highlight:
-            leafs = tree.get_leafs()
-            for doc_id in res:
-                self.index.get_doc_by_id(doc_id).reset_highlighted()
-                for term in leafs:
-                    self.index.get_doc_by_id(doc_id).highlight(term)
-        return res
+        res = tree.eval(self.interpreter, set(range(len(self.index.get_docs_idx()))))
+        return res, len(res)
 
 
 class NotValidQueryExpression(Exception): pass

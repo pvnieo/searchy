@@ -1,16 +1,10 @@
 # stdlib
 import os
 import os.path
-# 3p
-import nltk
 # project
+import words
 from utils import COLOR, replace_i, hash_collection, get_cache, set_cache
 
-
-STOP_WORDS = set(nltk.corpus.stopwords.words('english'))
-PONCTUATION = set(['.', ',', ':', ';', ')', '(', '[', ']', ' ', '{', '}', '"', '-', '/', '\\'])
-with open("Data/CACM/common_words", 'r') as common_words:
-	STOP_WORDS.update(set(common_words.read().lower().splitlines()))
 
 class Document:
 	LAST_ID = 0
@@ -32,17 +26,18 @@ class Document:
 		curr = None
 		recording = False
 		title = False
-		token_count = 0
+		terms_count = 0
 		with open(filepath, 'r') as cacm_file:
 			for line in cacm_file:
+				line = line.rstrip()
 				parts = line.split()
 				if parts[0] == '.I':
 					if curr is not None:
-						token_count += len(curr.tokens)
+						terms_count += len(curr.terms)
 						docs.append(curr)
-					curr = Document(int(parts[1]))
+					curr = Document()
 				elif parts[0] in wanted_markers:
-					curr.add_content_line(line.rstrip())
+					curr.add_content_line(line)
 					title = False
 					if parts[0] == '.T':
 						title = True
@@ -52,16 +47,16 @@ class Document:
 					title = False
 				elif not parts[0].startswith('.') and recording:
 					if title:
-						curr.add_title_line(line.rstrip())
-					curr.add_content_line(line.rstrip())
-					curr.tokenize(line)
+						curr.add_title_line(line)
+					curr.add_content_line(line)
+					curr.process_content(line)
 		if curr is not None:
-			token_count += len(curr.tokens)
+			terms_count += len(curr.terms)
 			docs.append(curr)
 		if verbose:
 			print("Loaded {}".format(filepath))
 			print("  documents \t {}".format(len(docs)))
-			print("  tokens \t {}".format(token_count))
+			print("  terms \t {}".format(terms_count))
 		if use_cache:
 			set_cache(cachedname, docs)
 
@@ -78,63 +73,83 @@ class Document:
 		if verbose:
 			print("Loading {}".format(dirpath))
 		docs = []
-		token_count = 0
+		terms_count = 0
 		for root, _, files in os.walk(dirpath):
 			for filename in files:
 				filepath = os.path.join(root, filename)
-				doc = Document(title=filepath)
+				doc = Document(title=filepath, url=filepath)
 				with open(filepath, 'r') as opened:
-					doc.tokenize(opened.read())
+					doc.process_content(opened.read())
 					if hold_content:
 						doc.content = opened.read()
-				token_count += len(doc.tokens)
+				terms_count += len(doc.terms)
 				docs.append(doc)
 
 		if verbose:
 			print("Loaded {}".format(dirpath))
 			print("  documents \t {}".format(len(docs)))
-			print("  tokens \t {}".format(token_count))
+			print("  terms \t {}".format(terms_count))
 		if use_cache:
 			set_cache(cachedname, docs)
 
 		return docs
 
-	def __init__(self, identifier=None, title=None, content=None):
-		self.identifier = identifier or self.get_new_id()
-		self.title = title or ""
-		self.content = content or ""
-		self.tokens = []
-		self.tokenizer = nltk.word_tokenize
-		self.tokenize(self.content)
+	def __init__(self, title=None, url=None, content=None):
+		self.title = title
+		self.content = content
+		self.url = url
+		self._id = None
+		self.terms = None
 
 	def add_content_line(self, line):
-		if len(self.content) > 0:
+		if self.content is not None:
 			self.content += "\n" + line
 		else:
 			self.content = line
 
 	def add_title_line(self, line):
-		if len(self.title) > 0:
+		if self.title is not None:
 			self.title += "\n" + line
 		else:
 			self.title = line
 
-	def get_new_id(self):
-		Document.LAST_ID += 1
-		return Document.LAST_ID
+	def set_id(self, doc_id):
+		self._id = doc_id
 
-	def highlight(self, term, color=COLOR.BOLD):
-		replacement = "{}{}{}".format(color, term, COLOR.ENDC)
-		self.content = replace_i(self.content, term, replacement)
+	def get_id(self):
+		return self._id
 
-	def reset_highlighted(self):
-		self.content = self.content.replace(COLOR.BOLD, "")
-		self.content = self.content.replace(COLOR.ENDC, "")
+	def highlighted_content(self, query, color=COLOR.BOLD):
+		content = self.content
+		if (content is None) and (self.url is not None):
+			with open(self.url, 'r') as opened:
+				content = opened.read()
+		elif content is None and self.url is None:
+			return ""
+		query = query.replace('&', ' ')
+		query = query.replace('|', ' ')
+		query = query.replace('~', ' ')
+		for term, _ in words.process(query):
+			replacement = "{}{}{}".format(color, term, COLOR.ENDC)
+			content = replace_i(content, term, replacement)
+		return content
 
-	def tokenize(self, text):
-		for char in PONCTUATION:
-			text = text.replace(char, ' ')
-		for token in [t.lower() for t in self.tokenizer(text)]:
-			if token in STOP_WORDS:
-				continue
-			self.tokens.append(token)
+	def get_terms(self):
+		return self.terms
+
+	def del_terms(self):
+		del self.terms
+		self.terms = None
+
+	def process_content(self, text):
+		if self.terms is None:
+			self.terms = []
+		frequency = dict(self.terms)
+		new_frequency = dict(words.process(text))
+		for term, tf in new_frequency.items():
+			if term in frequency:
+				frequency[term] += tf
+			else:
+				frequency[term] = tf
+		self.terms = list(frequency.items())
+		return self.terms
