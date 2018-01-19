@@ -15,34 +15,41 @@ class TestBooleanSearchEngine(unittest.TestCase):
         engine = BooleanSearchEngine(index)
 
         res, total = engine.search('programming')
+        res = [doc_id for _, doc_id in res]
         self.assertEqual(3, total)
         self.assertIn(0, res)
         self.assertIn(2, res)
         self.assertIn(3, res)
         
         res, total = engine.search('programming & communication')
+        res = [doc_id for _, doc_id in res]
         self.assertEqual(2, total)
         self.assertIn(0, res)
         self.assertIn(3, res)
 
         res, total = engine.search('programming&~Communication')
+        res = [doc_id for _, doc_id in res]
         self.assertEqual(1, total)
         self.assertIn(2, res)
 
         res, total = engine.search('programming&~Communication')
+        res = [doc_id for _, doc_id in res]
         self.assertEqual(1, total)
         self.assertIn(2, res)
 
         res, total = engine.search('~communication')
+        res = [doc_id for _, doc_id in res]
         self.assertEqual(3, total)
         self.assertIn(1, res)
         self.assertIn(2, res)
         self.assertIn(4, res)
 
         res, total = engine.search('language&~language')
+        res = [doc_id for _, doc_id in res]
         self.assertEqual(0, total)
         
         res, total = engine.search('machines|computer')
+        res = [doc_id for _, doc_id in res]
         self.assertEqual(3, total)
         self.assertIn(0, res)
         self.assertIn(2, res)

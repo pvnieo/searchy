@@ -35,7 +35,7 @@ class Document:
 					if curr is not None:
 						terms_count += len(curr.terms)
 						docs.append(curr)
-					curr = Document()
+					curr = Document(title="["+parts[1]+"] ")
 				elif parts[0] in wanted_markers:
 					curr.add_content_line(line)
 					title = False
@@ -100,6 +100,7 @@ class Document:
 		self.url = url
 		self._id = None
 		self.terms = None
+		self.len_terms = 0
 
 	def add_content_line(self, line):
 		if self.content is not None:
@@ -152,4 +153,5 @@ class Document:
 			else:
 				frequency[term] = tf
 		self.terms = list(frequency.items())
+		self.len_terms = len(self.terms)
 		return self.terms

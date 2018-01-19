@@ -18,7 +18,10 @@ def tfidf_weighting(index, query, epsilon=0.5):
         term = index.get_term_by_id(term_id)
         if term is not None and term in frequency:
             tf = frequency[term]
-        query_weights[term_id] = (1 + math.log(tf + epsilon, 10)) * math.log((len_docs / len(index.inversed_index[term_id])), 10)
+        if tf > 0:
+            query_weights[term_id] = (1 + math.log(tf, 10)) * math.log((len_docs / len(index.inversed_index[term_id])), 10)
+        else:
+            query_weights[term_id] = 0
     return np.array(query_weights)
 
 def nf_weighting(index, query):
@@ -32,8 +35,8 @@ def nf_weighting(index, query):
         if term is not None and term in frequency:
             tf = frequency[term]
         query_weights[term_id] = tf
-    max_frequency = max(query_weights)
-    query_weights = [w / max_frequency for w in query_weights]
+    # max_frequency = max(query_weights)
+    # query_weights = [w / max_frequency for w in query_weights]
     return np.array(query_weights)
 
 # Norms Definitions
@@ -58,7 +61,7 @@ def overlap_norm(q, d):
 
 class VectorialSearchEngine:
     
-    def __init__(self, index, weighting='tfidf', norm='dice', threshold=0.001):
+    def __init__(self, index, weighting='tfidf', norm='dice', threshold=0.5):
         self.index = index
         self.len_docs = len(self.index.get_docs_idx())
         self.len_terms = len(self.index.get_terms_idx())
@@ -99,15 +102,15 @@ class VectorialSearchEngine:
         for doc_id in range(self.len_docs):
             document_weights = self.weights[:, doc_id]
             score = self.norm(query_weights, document_weights)
-            if score <= self.threshold:
+            if score >= self.threshold:
                 total += 1
             else:
                 continue
             if len(results) == top:
-                if results[-1][0] > score:
+                if results[-1][0] > -score:
                     results.pop(-1)
                 else:
                     continue
-            results.add((score, doc_id))
-        return [doc_id for _, doc_id in results], total
+            results.add((-score, doc_id))
+        return results, total
 

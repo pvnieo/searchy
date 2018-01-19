@@ -13,9 +13,9 @@ class TestDocument(unittest.TestCase):
 
         self.assertEqual(len(documents), 5)
 
-        self.assertIn('programming', [term for term, _ in documents[0].terms])
-        self.assertIn('communication', [term for term, _ in documents[0].terms])
-        self.assertIn('recursive', [term for term, _ in documents[4].terms])
+        self.assertIn('program', [term for term, _ in documents[0].terms])
+        self.assertIn('commun', [term for term, _ in documents[0].terms])
+        self.assertIn('recurs', [term for term, _ in documents[4].terms])
 
         self.assertNotIn(' ', documents[0].terms)
 

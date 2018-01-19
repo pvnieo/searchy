@@ -39,18 +39,23 @@ class Index:
         return index
 
     @staticmethod
-    def tf_idf_weighting(inversed_index, n):
+    def tf_idf_weighting(inversed_index, docs_idx):
         """
         :param inversed_index: inversed index
-        :param N: total number of documents
+        :param docs_idx: documents index
         :returns: weight matrix with rows:
                   (w_doc_0 | w_doc_1 | ... | w_doc_n) for each term_id
         """
         weight = []
+        n = len(docs_idx)
         for term_id, posting_list in enumerate(inversed_index):
             weight.append([0]*n)
             for doc_id, tf in posting_list:
                 weight[term_id][doc_id] = (1 + math.log(tf, 10)) * math.log(n / len(posting_list), 10)
+        for doc_id, doc in enumerate(docs_idx):
+            s = sum(weight[term_id][doc_id] for term_id in range(len(inversed_index)))
+            for term_id in range(len(inversed_index)):
+                weight[term_id][doc_id] *= 1 / math.sqrt(s)
         return weight
 
     @staticmethod
@@ -108,7 +113,7 @@ class Index:
         if self._tf_idf_weights is not None:
             return self._tf_idf_weights
         if verbose: print('Calculating tf-idf weights matrix')
-        self._tf_idf_weights = Index.tf_idf_weighting(self.inversed_index, len(self.docs_idx))
+        self._tf_idf_weights = Index.tf_idf_weighting(self.inversed_index, self.docs_idx)
         return self._tf_idf_weights
 
     def get_normalized_frequency_weights(self, verbose=True):

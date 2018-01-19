@@ -33,7 +33,7 @@ class BooleanSearchEngine:
     def search(self, query):
         tree = EvalTree.construct_tree(query)
         res = tree.eval(self.interpreter, set(range(len(self.index.get_docs_idx()))))
-        return res, len(res)
+        return [(1, doc_id) for doc_id in res], len(res)
 
 
 class NotValidQueryExpression(Exception): pass

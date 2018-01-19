@@ -17,14 +17,14 @@ def exec_search(index, engine, query, **kargs):
     try:
         results, total = engine.search(query, **kargs)
         end_time = time.time()
-        for doc_id in results:
-            header = str(doc_id+1) + ". " + index.get_doc_by_id(doc_id).title
+        for score, doc_id in results:
+            header = str(doc_id+1) + ". " + index.get_doc_by_id(doc_id).title + "  (" + str(abs(score)) + ")"
             print(utils.COLOR.BOLD, '-'*len(header), utils.COLOR.ENDC)
             print(utils.COLOR.BOLD, header, utils.COLOR.ENDC)
             print(utils.COLOR.BOLD, '-'*len(header), utils.COLOR.ENDC)
             print(index.get_doc_by_id(doc_id).highlighted_content(query))
         print()
-        print("total results:", total, "%8.2f ms" % (end_time - start_time))
+        print("total results:", total, "%8.2f s" % (end_time - start_time))
     except NotValidQueryExpression as error:
         print(error)
 
@@ -34,7 +34,7 @@ def main():
     parser.add_argument("-q", "--query", help="Execute a search query", type=str)
     parser.add_argument("-m", "--model", help="Search engine model", type=str, default="vect", choices=["bool", "vect"])
     parser.add_argument("-n", "--norm", help="Vectorial search norm", type=str, default="dice", choices=list(VectorialSearchEngine.NORMS.keys()))
-    parser.add_argument("-t", "--threshold", help="Vectorial search norm threshold", type=float, default=0.001)
+    parser.add_argument("-t", "--threshold", help="Vectorial search norm threshold", type=float, default=0.1)
     parser.add_argument("-w", "--weighting", help="Vectorial weighting method", type=str, default="tfidf", choices=list(VectorialSearchEngine.WEIGHTINGS.keys()))
     parser.add_argument("-s", "--silent", help="Disable verbose mode", action="store_true")
     parser.add_argument("-f", "--force", help="Force re-indexing overwrite cache", action="store_true")
