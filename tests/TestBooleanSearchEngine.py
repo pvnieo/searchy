@@ -17,32 +17,32 @@ class TestBooleanSearchEngine(unittest.TestCase):
         res, total = engine.search('programming')
         res = [doc_id for _, doc_id in res]
         self.assertEqual(3, total)
-        self.assertIn(0, res)
-        self.assertIn(2, res)
-        self.assertIn(3, res)
+        self.assertIn(11, res)
+        self.assertIn(13, res)
+        self.assertIn(14, res)
         
         res, total = engine.search('programming & communication')
         res = [doc_id for _, doc_id in res]
         self.assertEqual(2, total)
-        self.assertIn(0, res)
-        self.assertIn(3, res)
+        self.assertIn(11, res)
+        self.assertIn(14, res)
 
         res, total = engine.search('programming&~Communication')
         res = [doc_id for _, doc_id in res]
         self.assertEqual(1, total)
-        self.assertIn(2, res)
+        self.assertIn(13, res)
 
         res, total = engine.search('programming&~Communication')
         res = [doc_id for _, doc_id in res]
         self.assertEqual(1, total)
-        self.assertIn(2, res)
+        self.assertIn(13, res)
 
         res, total = engine.search('~communication')
         res = [doc_id for _, doc_id in res]
         self.assertEqual(3, total)
-        self.assertIn(1, res)
-        self.assertIn(2, res)
-        self.assertIn(4, res)
+        self.assertIn(12, res)
+        self.assertIn(13, res)
+        self.assertIn(15, res)
 
         res, total = engine.search('language&~language')
         res = [doc_id for _, doc_id in res]
@@ -51,9 +51,9 @@ class TestBooleanSearchEngine(unittest.TestCase):
         res, total = engine.search('machines|computer')
         res = [doc_id for _, doc_id in res]
         self.assertEqual(3, total)
-        self.assertIn(0, res)
-        self.assertIn(2, res)
-        self.assertIn(3, res)
+        self.assertIn(11, res)
+        self.assertIn(13, res)
+        self.assertIn(14, res)
 
 if __name__ == '__main__':
     unittest.main()

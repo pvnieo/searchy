@@ -3,7 +3,7 @@ import os
 import os.path
 # project
 import words
-from utils import COLOR, replace_i, hash_collection, get_cache, set_cache
+from utils import hash_collection, get_cache, set_cache, add_line_str
 
 
 class Document:
@@ -30,14 +30,16 @@ class Document:
 		with open(filepath, 'r') as cacm_file:
 			for line in cacm_file:
 				line = line.rstrip()
+				if len(line) == 0: 
+					continue
 				parts = line.split()
 				if parts[0] == '.I':
 					if curr is not None:
 						terms_count += len(curr.terms)
 						docs.append(curr)
-					curr = Document(title="["+parts[1]+"] ")
+					curr = Document(identifier=int(parts[1]))
 				elif parts[0] in wanted_markers:
-					curr.add_content_line(line)
+					curr.content = add_line_str(curr.content, line)
 					title = False
 					if parts[0] == '.T':
 						title = True
@@ -47,8 +49,8 @@ class Document:
 					title = False
 				elif not parts[0].startswith('.') and recording:
 					if title:
-						curr.add_title_line(line)
-					curr.add_content_line(line)
+						curr.title = add_line_str(curr.title, line)
+					curr.content = add_line_str(curr.content, line)
 					curr.process_content(line)
 		if curr is not None:
 			terms_count += len(curr.terms)
@@ -94,49 +96,29 @@ class Document:
 
 		return docs
 
-	def __init__(self, title=None, url=None, content=None):
+	def __init__(self, identifier=None, title=None, url=None, content=None):
+		self._id = identifier
+		if identifier is None:
+			self._id = Document.LAST_ID
+			Document.LAST_ID += 1
+		else:
+			Document.LAST_ID = max(identifier, Document.LAST_ID) + 1
+		
 		self.title = title
 		self.content = content
 		self.url = url
-		self._id = None
 		self.terms = None
+
 		self.len_terms = 0
+		self.m_freq = 0
+		self.max_freq = 0
+		self.min_freq = float('inf')
 
-	def add_content_line(self, line):
-		if self.content is not None:
-			self.content += "\n" + line
-		else:
-			self.content = line
-
-	def add_title_line(self, line):
-		if self.title is not None:
-			self.title += "\n" + line
-		else:
-			self.title = line
-
-	def set_id(self, doc_id):
-		self._id = doc_id
+		if content is not None:
+			self.process_content(content)
 
 	def get_id(self):
 		return self._id
-
-	def highlighted_content(self, query, color=COLOR.BOLD):
-		content = self.content
-		if (content is None) and (self.url is not None):
-			with open(self.url, 'r') as opened:
-				content = opened.read()
-		elif content is None and self.url is None:
-			return ""
-		query = query.replace('&', ' ')
-		query = query.replace('|', ' ')
-		query = query.replace('~', ' ')
-		for term, _ in words.process(query):
-			replacement = "{}{}{}".format(color, term, COLOR.ENDC)
-			content = replace_i(content, term, replacement)
-		return content
-
-	def get_terms(self):
-		return self.terms
 
 	def del_terms(self):
 		del self.terms
@@ -154,4 +136,8 @@ class Document:
 				frequency[term] = tf
 		self.terms = list(frequency.items())
 		self.len_terms = len(self.terms)
+		for _, freq in self.terms:
+			self.m_freq += freq / self.len_terms
+			self.max_freq = max(self.max_freq, freq)
+			self.min_freq = min(self.min_freq, freq)
 		return self.terms

@@ -12,17 +12,13 @@ class TestIndex(unittest.TestCase):
         warnings.simplefilter("ignore")
         index = Index.index_cacm_file(os.path.join(os.getcwd(), 'tests', 'cacm.all'), verbose=False, use_cache=False)
 
-        self.assertIn('program', index.terms_rev_idx)
-        term_id = index.terms_rev_idx['program']
-        self.assertIn(0, [doc_id for doc_id, _ in index.inversed_index[term_id]])
-        self.assertIn(2, [doc_id for doc_id, _ in index.inversed_index[term_id]])
-        self.assertIn(3, [doc_id for doc_id, _ in index.inversed_index[term_id]])
-        self.assertTrue(index.inversed_index[term_id][0][0] < index.inversed_index[term_id][1][0])
-        self.assertTrue(index.inversed_index[term_id][1][0] < index.inversed_index[term_id][2][0])
+        self.assertIn('program', index.inversed_index)
+        self.assertIn(11, index.inversed_index['program'])
+        self.assertIn(13, index.inversed_index['program'])
+        self.assertIn(14, index.inversed_index['program'])
 
-        self.assertIn('commun', index.terms_rev_idx)
-        term_id = index.terms_rev_idx['commun']
-        self.assertEqual(2, len(index.inversed_index[term_id]))
+        self.assertIn('commun', index.inversed_index)
+        self.assertEqual(2, len(index.inversed_index['commun']))
         
 if __name__ == '__main__':
     unittest.main()

@@ -1,5 +1,6 @@
 *.pyc
 __cache__
+__pycache__
 Data/CS276/pa1-data
 Data/CS276/pa1-data.zip
 .DS_Store

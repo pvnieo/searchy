@@ -1,5 +1,7 @@
-import nltk
+# stdlib
 import string
+# 3p
+import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
 
@@ -8,8 +10,8 @@ PONCTUATION = string.punctuation
 with open("data/CACM/common_words", 'r') as common_words:
     STOP_WORDS.update(set(common_words.read().lower().splitlines()))
 
-wordnet_lemmatizer = WordNetLemmatizer()
-porter_stemmer = PorterStemmer()
+WORDNET_LEMMATIZER = WordNetLemmatizer()
+PORTER_STEMMER = PorterStemmer()
 
 def tokenize(text):
     tokens = []
@@ -24,12 +26,15 @@ def tokenize(text):
 def lemmatize(tokens):
     lemmatized_tokens = {}
     for token in tokens:
-        term = porter_stemmer.stem(wordnet_lemmatizer.lemmatize(token))
+        term = PORTER_STEMMER.stem(WORDNET_LEMMATIZER.lemmatize(token))
         if term not in lemmatized_tokens:
             lemmatized_tokens[term] = 1
         else:
             lemmatized_tokens[term] += 1
     return list(lemmatized_tokens.items())
 
-def process(text):
-    return lemmatize(tokenize(text))
+def process(text, terms_only=False):
+    terms = lemmatize(tokenize(text))
+    if terms_only:
+        terms = sorted([term for term, _ in terms])
+    return terms

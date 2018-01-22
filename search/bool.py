@@ -13,12 +13,11 @@ class BooleanSearchEngine:
         }
 
     def contains(self, res, term):
-        term = words.process(term)[0][0]
+        term = words.process(term, terms_only=True)[0]
         index = self.index
-        term_id = index.get_term_id(term)
         contain_doc_ids = set()
-        if term_id is not None:
-            contain_doc_ids = set([doc_id for (doc_id, _) in index.inversed_index[term_id]])
+        if term in index.inversed_index:
+            contain_doc_ids = set(index.inversed_index[term].keys())
         return res.intersection(contain_doc_ids)
 
     def not_contains(self, res, docs):
@@ -32,7 +31,7 @@ class BooleanSearchEngine:
 
     def search(self, query):
         tree = EvalTree.construct_tree(query)
-        res = tree.eval(self.interpreter, set(range(len(self.index.get_docs_idx()))))
+        res = tree.eval(self.interpreter, set(self.index.get_docs_idx().keys()))
         return [(1, doc_id) for doc_id in res], len(res)
 
 

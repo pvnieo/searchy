@@ -6,6 +6,8 @@ import sys
 import pickle
 from zipfile import ZipFile
 from urllib.request import urlretrieve
+# project
+import words
 
 
 # To print colors in terminal
@@ -23,15 +25,28 @@ def replace_i(text, old, new):
     match = re.compile(re.escape(old), re.IGNORECASE)
     return match.sub(new, text)
 
-def insert_sorted(array, element):
-    n = len(array)
-    for i in range(n):
-        if element < array[i]:
-            array.insert(i, element)
-            return
-        elif element == array[i]:
-            return
-    array.append(element)
+def add_line_str(content, line):
+    if content is not None:
+        content += "\n" + line
+    else:
+        content = line
+    return content
+
+def highlighted_content(document, query, color=COLOR.BOLD):
+    content = document.content
+    url = document.url
+    if (content is None) and (url is not None):
+        with open(url, 'r') as opened:
+            content = opened.read()
+    elif content is None and url is None:
+        return ""
+    query = query.replace('&', ' ')
+    query = query.replace('|', ' ')
+    query = query.replace('~', ' ')
+    for token in words.tokenize(query):
+        replacement = "{}{}{}".format(color, token, COLOR.ENDC)
+        content = replace_i(content, token, replacement)
+    return content
 
 def hash_collection(path):
     hashed = hashlib.sha1((path + str(os.path.getsize(path))+str(os.path.getmtime(path))).encode())
