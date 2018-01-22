@@ -1,3 +1,6 @@
+# stdlib
+from time import time
+import sys
 # project
 from Document import Document
 from utils import hash_collection, get_cache, set_cache
@@ -10,6 +13,8 @@ class Index:
         if use_cache and not overwrite_cache:
             cached = get_cache(cache_name)
             if cached is not None:
+                if verbose:
+                    print(f'Using cache {cache_name}')
                 return cached
         index = Index()
         for doc in docs:
@@ -21,15 +26,25 @@ class Index:
     @staticmethod
     def index_cacm_file(filepath, verbose=True, use_cache=True, overwrite_cache=False):
         cache_name = hash_collection(filepath) + '.index.bin'
+        start = time()
         docs = Document.parse_cacm(filepath, verbose, use_cache, overwrite_cache)
         index = Index.index_all(docs, cache_name, use_cache, overwrite_cache, verbose)
+        end = time()
+        memory = sys.getsizeof(index)
+        if verbose:
+            print('time: {:.2f} s     memory: {:.2f} kb'.format(end-start, memory / (1024)))
         return index
 
     @staticmethod
     def index_directory(dirpath, verbose=True, use_cache=True, overwrite_cache=False, hold_content=False, buffer_size=5000):
         cache_name = hash_collection(dirpath) + '.index.bin'
+        start = time()
         docs = Document.read_dir(dirpath, verbose, use_cache, overwrite_cache, hold_content)
         index = Index.index_all(docs, cache_name, use_cache, overwrite_cache, verbose)
+        end = time()
+        memory = sys.getsizeof(index)
+        if verbose:
+            print('time: {:.2f} s     memory: {:.2f} kb'.format(end-start, memory / (1024)))
         return index
 
     def __init__(self):

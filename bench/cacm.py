@@ -1,7 +1,5 @@
 # stdlib
 import os.path
-# 3p
-from tabulate import tabulate
 # project
 from Index import Index
 from Document import Document
@@ -36,7 +34,7 @@ for weighting in WEIGHTINGS:
             querl = querls[query.get_id()]
             query_str = query.content.replace('.W\n', '')
             query_str = query_str.replace('.K\n', '')
-            res, _ = engine.search(query_str)
+            res, _ = engine.search(query_str, top=len(querl))
             success += sum([1 if doc_id in querl else 0 for _, doc_id in res]) / len(querl)
             total += 1
         print(weighting, norm, ": {:.2f}%".format(success * 100 / total))
