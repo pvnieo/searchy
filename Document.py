@@ -26,7 +26,6 @@ class Document:
 		curr = None
 		recording = False
 		title = False
-		terms_count = 0
 		with open(filepath, 'r') as cacm_file:
 			for line in cacm_file:
 				line = line.rstrip()
@@ -35,7 +34,6 @@ class Document:
 				parts = line.split()
 				if parts[0] == '.I':
 					if curr is not None:
-						terms_count += len(curr.terms)
 						docs.append(curr)
 					curr = Document(identifier=int(parts[1]))
 				elif parts[0] in wanted_markers:
@@ -53,12 +51,7 @@ class Document:
 					curr.content = add_line_str(curr.content, line)
 					curr.process_content(line)
 		if curr is not None:
-			terms_count += len(curr.terms)
 			docs.append(curr)
-		if verbose:
-			print("Loaded {}".format(filepath))
-			print("  documents \t {}".format(len(docs)))
-			print("  terms \t {}".format(terms_count))
 		if use_cache:
 			set_cache(cachedname, docs)
 
@@ -75,7 +68,6 @@ class Document:
 		if verbose:
 			print("Loading {}".format(dirpath))
 		docs = []
-		terms_count = 0
 		for root, _, files in os.walk(dirpath):
 			for filename in files:
 				filepath = os.path.join(root, filename)
@@ -84,13 +76,8 @@ class Document:
 					doc.process_content(opened.read())
 					if hold_content:
 						doc.content = opened.read()
-				terms_count += len(doc.terms)
 				docs.append(doc)
 
-		if verbose:
-			print("Loaded {}".format(dirpath))
-			print("  documents \t {}".format(len(docs)))
-			print("  terms \t {}".format(terms_count))
 		if use_cache:
 			set_cache(cachedname, docs)
 

@@ -32,6 +32,9 @@ class Index:
         end = time()
         memory = sys.getsizeof(index)
         if verbose:
+            print("Loaded {}".format(filepath))
+            print("  documents \t {}".format(len(docs)))
+            print("  terms \t {}".format(len(index.inversed_index)))
             print('time: {:.2f} s     memory: {:.2f} kb'.format(end-start, memory / (1024)))
         return index
 
@@ -44,6 +47,9 @@ class Index:
         end = time()
         memory = sys.getsizeof(index)
         if verbose:
+            print("Loaded {}".format(dirpath))
+            print("  documents \t {}".format(len(docs)))
+            print("  terms \t {}".format(len(index.inversed_index)))
             print('time: {:.2f} s     memory: {:.2f} kb'.format(end-start, memory / (1024)))
         return index
 
