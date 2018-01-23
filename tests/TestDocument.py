@@ -9,7 +9,7 @@ class TestDocument(unittest.TestCase):
 
     def test_parse_cacm(self):
         warnings.simplefilter("ignore")
-        documents = Document.parse_cacm(os.path.join(os.getcwd(), 'tests', 'cacm.all'), verbose=False, use_cache=False)
+        documents = Document.parse_cacm(os.path.join(os.getcwd(), 'tests', 'cacm.all'))
 
         self.assertEqual(len(documents), 5)
 

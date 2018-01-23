@@ -13,15 +13,12 @@ with open("data/CACM/common_words", 'r') as common_words:
 WORDNET_LEMMATIZER = WordNetLemmatizer()
 PORTER_STEMMER = PorterStemmer()
 
-def tokenize(text):
+def tokenize(text, lower=True):
     tokens = []
     for char in PONCTUATION:
         text = text.replace(char, ' ')
-    for token in [t.lower() for t in nltk.word_tokenize(text)]:
-        if token in STOP_WORDS:
-            continue
-        tokens.append(token)
-    return tokens
+    tokens = [t if not lower else t.lower() for t in nltk.word_tokenize(text)]
+    return [t for t in tokens if t.lower() not in STOP_WORDS]
 
 def lemmatize(tokens):
     lemmatized_tokens = {}

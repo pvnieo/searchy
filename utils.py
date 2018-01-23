@@ -43,16 +43,20 @@ def highlighted_content(document, query, color=COLOR.BOLD):
     query = query.replace('&', ' ')
     query = query.replace('|', ' ')
     query = query.replace('~', ' ')
-    for token in words.tokenize(query):
-        replacement = "{}{}{}".format(color, token, COLOR.ENDC)
-        content = replace_i(content, token, replacement)
+    query_terms = set(words.process(query, terms_only=True))
+    tokens = words.tokenize(content, lower=False)
+    for token in tokens:
+        term = words.process(token.lower(), terms_only=True)[0]
+        if term in query_terms:
+            replacement = "{}{}{}".format(color, token, COLOR.ENDC)
+            content = content.replace(token, replacement)
     return content
 
 def hash_collection(path):
     hashed = hashlib.sha1((path + str(os.path.getsize(path))+str(os.path.getmtime(path))).encode())
     return hashed.hexdigest()
 
-CACHE_DIR = '__cache__'
+CACHE_DIR = 'dumps'
 if not os.path.exists(CACHE_DIR):
     os.makedirs(CACHE_DIR)
 

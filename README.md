@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/souhaibattaiki/searchy.svg?branch=master)](https://travis-ci.org/souhaibattaiki/searchy)
 
-Implémentation d'un moteur de recherche.
+Implémentation d'un moteur de recherche pour une collection de fichiers.
 
 ## Usage
 
@@ -10,7 +10,7 @@ Utilisez le script `searchy.py` pour indexer une collection:
 ```
 usage: searchy.py [-h] [-q QUERY] [-m {bool,vect}]
                   [-n {cos,dice,jaccard,overlap}] [-t THRESHOLD]
-                  [-w {tfidf,nf}] [-s] [-f] [--no-cache]
+                  [-w {f,tfidf,nf}] [-s] [-f] [--no-cache]
                   collection
 
 Builds a search engine on a collection of documents
@@ -29,73 +29,105 @@ optional arguments:
                         Vectorial search norm
   -t THRESHOLD, --threshold THRESHOLD
                         Vectorial search norm threshold
-  -w {tfidf,nf}, --weighting {tfidf,nf}
+  -w {f,tfidf,nf}, --weighting {f,tfidf,nf}
                         Vectorial weighting method
   -s, --silent          Disable verbose mode
   -f, --force           Force re-indexing overwrite cache
   --no-cache            Disable disk cache
 ```
 
-exemple d'usage:
+## Exemple d'usage
+
+### Model vectoriel
+
+Les requêtes sont des phrases. Ici on chechre dans la collection CACM.
+
 ```
 $ ./searchy.py data/CACM/cacm.all
 Loading data/CACM/cacm.all
-Loaded data/CACM/cacm.all
-  documents 	 3204
-  terms 	 81977
-Calculating tf-idf weights matrix
-Calculating normalized frequency weights matrix
-🔍  > programming language
- ------------
- 916. FORTRAN
- ------------
+Using cache e920b340
+  documents    3204
+  terms        5961
+memory: 0.42 mb
+🔍  > Processes and Proofs of Theorems and Programs
+ --------------------------------------------------------
+ 3079. An Algorithm for Reasoning About Equality [93.99%]
+ --------------------------------------------------------
 .T
-FORTRAN
- --------------------
- 195. What is a Code?
- --------------------
+An Algorithm for Reasoning About Equality
+.W
+A simple technique for reasoning about equalities
+that is fast and complete for ground formulas
+with function symbols and equality is presented.
+ A proof of correctness is given as well.
+.K
+Theorem proving, deduction, program verification, equality
+3.64 3.66 5.21
+ -------------------------------------------------------------------
+ 3140. Social Processes and Proofs of Theorems and Programs [93.87%]
+ -------------------------------------------------------------------
 .T
-What is a Code?
- -------------------------
- 29. Need for an Algorithm
- -------------------------
+Social Processes and Proofs of Theorems and Programs
+.W
+It is argued that formal verifications of
+programs, no matter how obtained, will not play the
+same key role in the development of computer science and software
+engineering as proofs do in mathematics.  Furthermore the absence
+of continuity, the inevitability of change, and the complexity of
+specification of significantly many real programs make the form
+al verification process difficult to justify and manage.  It is felt
+that ease of formal verification should not dominate program
+language design.
+.K
+Formal mathematics, mathematical proofs,
+program verification, program specification
+2.10 4.6 5.24
+ ---------------------------------------------------
+ 537. A Machine Program for Theorem-Proving [92.60%]
+ ---------------------------------------------------
 .T
-Need for an Algorithm
- -------------------------
- 866. Sorting on Computers
- -------------------------
-.T
-Sorting on Computers
- -----------------------------
- 1107. Computers and Education
- -----------------------------
-.T
-Computers and Education
- ----------------------------------
- 948. Note on the Use of Procedures
- ----------------------------------
-.T
-Note on the Use of Procedures
- ---------------
- 604. Why COBOL?
- ---------------
-.T
-Why COBOL?
- ----------
- 918. COBOL
- ----------
-.T
-COBOL
- --------------------------------------
- 1106. Programming of Digital Computers
- --------------------------------------
-.T
-programming of Digital Computers
- --------
- 262. MAP
- --------
-.T
-MAP
+A Machine Program for Theorem-Proving
+.W
+The program of a proof procedure is discussed in
+connection with trial runs and possible improvements.
 
-total results: 251    10.23 ms
+...
+
+total results: 1094     4.69 s
+```
+
+### Model booléen
+
+Les requêtes doivent être au format booléen suivant: `(mot1 & mot2) | ~mot3` 
+les opérateurs booléen autorisés sont: `&` (et), `|` (ou), `~` (négation).
+
+```
+./searchy.py -m bool data/CACM/cacm.all
+Loading data/CACM/cacm.all
+Using cache e920b340
+  documents 	 3204
+  terms 	 5961
+memory: 0.42 mb
+🔍  > processes & Proofs & theorems & programs
+ --------------------------------------------------------------------
+ 3140. Social Processes and Proofs of Theorems and Programs [100.00%]
+ --------------------------------------------------------------------
+.T
+Social Processes and Proofs of Theorems and Programs
+.W
+It is argued that formal verifications of
+programs, no matter how obtained, will not play the
+same key role in the development of computer science and software
+engineering as proofs do in mathematics.  Furthermore the absence
+of continuity, the inevitability of change, and the complexity of
+specification of significantly many real programs make the form
+al verification process difficult to justify and manage.  It is felt
+that ease of formal verification should not dominate program
+language design.
+.K
+Formal mathematics, mathematical proofs,
+program verification, program specification
+2.10 4.6 5.24
+
+total results: 1     4.58 s
 ```

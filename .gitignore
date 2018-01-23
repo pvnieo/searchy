@@ -1,6 +1,9 @@
 *.pyc
 __cache__
 __pycache__
+dumps/pa1-data
+dumps/pa1-data.zip
 Data/CS276/pa1-data
 Data/CS276/pa1-data.zip
 .DS_Store
+.vscode
