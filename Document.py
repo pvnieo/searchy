@@ -57,6 +57,7 @@ class Document:
 		self.terms = None
 
 		self.len_terms = 0
+		self.len_tokens = 0
 		self.m_freq = 0
 		self.max_freq = 0
 		self.min_freq = float('inf')
@@ -74,6 +75,7 @@ class Document:
 	def process_content(self, text):
 		if self.terms is None:
 			self.terms = []
+		self.len_tokens += len(words.process(text))
 		frequency = dict(self.terms)
 		new_frequency = dict(words.process(text))
 		for term, tf in new_frequency.items():

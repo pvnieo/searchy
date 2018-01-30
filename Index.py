@@ -15,6 +15,7 @@ class Index:
         memory = sys.getsizeof(index.inversed_index)
         memory += sys.getsizeof(index.docs_idx)
         print("  documents \t {}".format(len(index.docs_idx)))
+        print("  tokens \t {}".format(sum([ doc.len_tokens for doc in index.docs_idx.values() ])))
         print("  terms \t {}".format(len(index.inversed_index)))
         spent_str = '' if spent == 0 else 'time: {:.2f} s     '.format(spent)
         print(spent_str + 'memory: {:.2f} mb'.format(memory / (1024**2)))

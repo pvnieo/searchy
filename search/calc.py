@@ -40,12 +40,12 @@ def tfidf_weighting(inversed_index, docs_idx, terms):
         for doc_id, tf in inversed_index[term].items():
             if doc_id not in weights:
                 weights[doc_id] = np.zeros(len_terms)
-            weights[doc_id][i] = (1 + math.log(tf)) * math.log(total_terms / len_posting, 10)
+            weights[doc_id][i] = (1 + math.log(tf)) * math.log(total_terms / len_posting)
     for doc_id in weights:
         doc_w_sum = sum(weights[doc_id])
         doc = docs_idx[doc_id]
         for i in range(len_terms):
-            weights[doc_id][i] *= (1 / math.sqrt(doc_w_sum)) * (1 / (1 + math.log(doc.m_freq)))
+            weights[doc_id][i] *= (1 / math.sqrt(doc_w_sum)) # * (1 / (1 + math.log(doc.m_freq)))
     return weights
 
 def nf_weighting(inversed_index, docs_idx, terms):

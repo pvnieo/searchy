@@ -13,7 +13,8 @@ class BooleanSearchEngine:
         }
 
     def contains(self, res, term):
-        term = words.process(term, terms_only=True)[0]
+        processed = words.process(term, terms_only=True)
+        term = term if len(processed) == 0 else processed[0]
         index = self.index
         contain_doc_ids = set()
         if term in index.inversed_index:

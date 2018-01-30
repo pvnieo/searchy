@@ -53,7 +53,7 @@ def highlighted_content(document, query, color=COLOR.BOLD):
     return content
 
 def hash_collection(path):
-    hashed = hashlib.sha1((path + str(os.path.getsize(path))+str(os.path.getmtime(path))).encode())
+    hashed = hashlib.sha1((path + str(os.path.getsize(path))).encode())
     return hashed.hexdigest()
 
 CACHE_DIR = 'dumps'
