@@ -75,7 +75,20 @@ engineering as proofs do in mathematics.  Furthermore the absence
 total results: 260     2.94 s
 ```
 
-Pour charger la collection Stanford on peut utiliser l'url directement comme argument
+Pour charger la collection Stanford de manière rapide, vous pouvez la télécharger et l'extraire dans le dossier `dumps/pa1-data/pa1-data` 
+pour avoir une structure similaire à 
+```
+dumps/pa1-data/pa1-data/0
+dumps/pa1-data/pa1-data/1
+...
+dumps/pa1-data/pa1-data/9
+```
+Et puis charger la avec searchy:
+```
+$ ./searchy.py dumps/pa1-data
+```
+
+Sinon on peut utiliser l'url directement comme argument ce qui fera l'opération précédente automatiquement.
 ```
 $ ./searchy.py http://web.stanford.edu/class/cs276/pa/pa1-data.zip
 ```
