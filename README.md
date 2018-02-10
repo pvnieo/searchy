@@ -4,6 +4,18 @@
 
 Implémentation d'un moteur de recherche pour une collection de fichiers.
 
+## Installation
+
+Searchy tourne sous python >= 3.6, utilisez pip pour installer les dépendances
+```
+pip3 install -r requirements.txt
+```
+
+Installez les dépendances demandées par nltk avec la commande suivante:
+```
+python3 -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('wordnet');"
+```
+
 ## Usage
 
 Utilisez le script `searchy.py` pour indexer une collection:
@@ -44,6 +56,8 @@ Les requêtes sont des phrases. Ici on chechre dans la collection CACM.
 
 ```
 $ ./searchy.py data/CACM/cacm.all
+```
+```
 Loading data/CACM/cacm.all
 Using cache 64f76a63
   documents 	 3204
@@ -99,7 +113,9 @@ Les requêtes doivent être au format booléen suivant: `(mot1 & mot2) | ~mot3`
 les opérateurs booléen autorisés sont: `&` (et), `|` (ou), `~` (négation).
 
 ```
-./searchy.py -m bool data/CACM/cacm.all
+$ ./searchy.py -m bool data/CACM/cacm.all
+```
+```
 Loading data/CACM/cacm.all
 Using cache 64f76a63
   documents 	 3204
@@ -129,3 +145,4 @@ program verification, program specification
 
 total results: 1     2.96 s
 ```
+
