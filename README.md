@@ -1,6 +1,6 @@
 # Moteur de recherche
 
-[![Build Status](https://travis-ci.org/souhaibattaiki/searchy.svg?branch=master)](https://travis-ci.org/souhaibattaiki/searchy)
+[![Build Status](https://travis-ci.org/pvnieo/searchy.svg?branch=master)](https://travis-ci.org/pvnieo/searchy)
 
 Implémentation d'un moteur de recherche pour une collection de fichiers.
 
